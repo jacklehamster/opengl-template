@@ -1,1 +1,77 @@
-# lib-template
+# opengl-template
+
+This template is for setting up a canvas with WebGL2.
+It uses React to setup the template, and we can pass some webgl config.
+
+Typical usage:
+```
+hookupCanvas(div, {
+    pixelRatio: 2,
+    onRefresh(gl) {
+        //  do some WEBGL drawing
+    },
+    glConfig,
+    activeProgram,
+    programs,
+}, controller);
+```
+
+With glConfig:
+```
+glConfig = {
+    cullFace?: "front" | "back";
+    depth?: boolean;
+    backgroundColor?: {
+        r: number;
+        g: number;
+        b: number;
+        a: number;
+    };
+    config?: WebGLContextAttributes;    //  Typical webgl config passed when call getContext
+};
+```
+
+activeProgram is an id that indicates which program to use
+programs is an array of shader programs with the following structure:
+```
+        programs: [
+          {
+              id: "sample-multicolor",
+              shaderConfig: {
+                vertex: VERTEX_SHADER_CODE,
+                fragment: FRAGMENT_SHADER_CODE,
+                maxInstancesCount: 10000,   //  optional
+              },
+              attributeConfigs: [
+                {
+                  name: "position",
+                  location: 0,
+                  type: "FLOAT",
+                  usage: "STATIC_DRAW",
+                },
+                {
+                  name: "color",
+                  type: "FLOAT",
+                  usage: "STATIC_DRAW",
+                }
+              ],
+          },
+        ],
+```
+
+Attribute configs defines the type of each attributes in the shaders.
+
+
+controller is an empty object {}, which will get filled with some methods:
+- setActive
+- setActiveProgram
+
+setActive: just activate / deactivate the canvas. Note that it also deletes all the canvas's programs.
+setActiveProgram: Here pass the program id. This switches between the program.
+
+
+Once we're done with setting up the config, the code in "onRefresh" can be used to render some WebGL graphics. onRefresh is called by the React component when it detects that it needs to refresh (canvas size changed, program changed, ...), but typically it'll also be used externally in a loop to render any animated graphics.
+
+### Demo
+
+In the [demo](https://jacklehamster.github.io/opengl-template/public), we setup some WebGL to draw a triangle, and we have 3 WebGL programs loaded.

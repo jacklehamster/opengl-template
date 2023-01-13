@@ -1,5 +1,5 @@
 {
-  "name": "@dobuki/lib-template",
+  "name": "@dobuki/opengl-template",
   "version": "1.0.1",
   "description": "",
   "main": "src/index.ts",
@@ -10,27 +10,38 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jacklehamster/lib-template.git"
+    "url": "git+https://github.com/jacklehamster/opengl-template.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jacklehamster/lib-template/issues"
+    "url": "https://github.com/jacklehamster/opengl-template/issues"
   },
-  "homepage": "https://github.com/jacklehamster/lib-template#readme",
+  "homepage": "https://github.com/jacklehamster/opengl-template#readme",
   "devDependencies": {
+    "@babel/preset-react": "^7.16.7",
     "@types/express": "^4.17.13",
     "@types/node": "^18.7.14",
-    "webpack-cli": "^4.10.0",
+    "@types/react": "^18.0.26",
+    "@types/react-dom": "^18.0.10",
+    "@types/react-resizable": "^3.0.3",
+    "@types/react-router": "^5.1.18",
     "chai": "^4.2.0",
-    "mocha": "^9.1.4",
-    "mock-xmlhttprequest": "^7.0.4"
+    "mocha": "^10.2.0",
+    "mock-xmlhttprequest": "^8.1.0",
+    "webpack-cli": "^5.0.1"
   },
   "dependencies": {
     "express": "^4.18.1",
     "express-static": "^1.2.6",
     "icon-gen": "^3.0.1",
     "path": "^0.12.7",
-    "ts-loader": "^9.3.1"
+    "react": "^18.0.0-rc.3",
+    "react-css-modules": "^4.7.11",
+    "react-dom": "^18.2.0",
+    "react-resizable": "^3.0.4",
+    "react-scripts": "^5.0.1",
+    "ts-loader": "^9.3.1",
+    "ts-node": "^10.9.1"
   }
 }

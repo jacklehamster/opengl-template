@@ -2,7 +2,8 @@
   "ts-node": {
     "transpileOnly": true,
     "files": true,
-    "esm": true
+    "esm": true,
+    "allowTsInNodeModules": true
   },
   "compilerOptions": {
     "jsx": "react",

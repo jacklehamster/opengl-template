@@ -44,7 +44,7 @@ export default {
         ],
       },
       {
-        test: /\.(ts|tsx)$/,
+        test: /\.tsx?$/,
         exclude: /node_modules/,
         use: ["ts-loader"],
       },
