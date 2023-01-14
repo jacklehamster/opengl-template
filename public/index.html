@@ -6,6 +6,85 @@
     <script>
       const controller = {};
 
+      function initialize(gl) {
+        const triangleArray = gl.createVertexArray();
+          gl.bindVertexArray(triangleArray);
+
+          const positions = new Float32Array([
+              0.0, 0.5, 0.0,
+              -0.5, -0.5, 0.0,
+              0.5, -0.5, 0.0,
+          ]);
+
+          const positionBuffer = gl.createBuffer();
+          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+          gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+          gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+          gl.enableVertexAttribArray(0);
+
+          const colors = new Float32Array([
+              1.0, 0.0, 0.0,
+              0.0, 1.0, 0.0,
+              0.0, 0.0, 1.0
+          ]);
+
+          const colorBuffer = gl.createBuffer();
+          gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);SubtleCrypto
+          gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
+          gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0);
+          gl.enableVertexAttribArray(1);
+        return {triangleArray, positions, positionBuffer, colors, colorBuffer};
+      }
+
+      function dispose(gl, {triangleArray, positions, positionBuffer, colors, colorBuffer}) {
+        gl.deleteVertexArray(triangleArray);
+        delete positions;
+        delete colors;
+        gl.deleteBuffer(positionBuffer);
+        gl.deleteBuffer(colorBuffer);
+      }
+
+      function staticRefresh(gl) {
+        const resources = initialize(gl);
+        const {triangleArray, positions, positionBuffer, colors, colorBuffer} = resources;
+        ////////////////
+        // DRAW
+        ////////////////
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+        dispose(gl, resources);
+      }
+
+      function animatedRefresh(gl) {
+        const resources = initialize(gl);
+        const {triangleArray, positions, positionBuffer, colors, colorBuffer} = resources;
+
+        ////////////////
+        // DRAW
+        ////////////////
+        let id;
+        const loop = (time) => {
+          //  update position
+          if (time) {
+            positions[0] = Math.sin(time / 100);
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
+
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+          }
+          id = requestAnimationFrame(loop);
+        };
+
+        loop(0);
+
+        return () => {
+          dispose(gl, resources);
+          cancelAnimationFrame(id);
+        };
+      }
+
       const config = {
         showDebugInfo: true,
         programs: [
@@ -84,47 +163,7 @@
               `
             },
         ],
-        onRefresh(gl) {
-          const triangleArray = gl.createVertexArray();
-          gl.bindVertexArray(triangleArray);
-
-          const positions = new Float32Array([
-              -0.5, -0.5, 0.0,
-              0.5, -0.5, 0.0,
-              0.0, 0.5, 0.0,
-          ]);
-
-          const positionBuffer = gl.createBuffer();
-          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-          gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-          gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
-          gl.enableVertexAttribArray(0);
-
-          const colors = new Float32Array([
-              1.0, 0.0, 0.0,
-              0.0, 1.0, 0.0,
-              0.0, 0.0, 1.0
-          ]);
-
-          const colorBuffer = gl.createBuffer();
-          gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-          gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
-          gl.vertexAttribPointer(1, 3, gl.FLOAT, false, 0, 0);
-          gl.enableVertexAttribArray(1);
-
-          ////////////////
-          // DRAW
-          ////////////////
-          gl.clear(gl.COLOR_BUFFER_BIT);
-          gl.drawArrays(gl.TRIANGLES, 0, 3);
-          return () => {
-            gl.deleteBuffer(positionBuffer);
-            gl.deleteBuffer(colorBuffer);
-            gl.deleteVertexArray(triangleArray);
-            delete positions;
-            delete colors;
-          };
-        }
+        onRefresh: staticRefresh,
       };
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -139,15 +178,22 @@
 	<body>
     <div style="display: flex; flex-direction: row; position: absolute;">
       <div>
-        <label for="active">Active</label>
+        <label for="active">Active:</label>
         <input id="active" type="checkbox" onChange="controller?.setActive(this.checked)" checked>    
       </div>
       <div>
-        <label for="program">Program</label>
+        <label for="program">Program:</label>
         <select id="program" onchange="controller?.setActiveProgram(this.value)">
           <option value="sample-multicolor" selected>Sample Multicolor</option>
           <option value="sample-red">Sample Red</option>
           <option value="sample-blue">Sample Blue</option>
+        </select>
+      </div>
+      <div>
+        <label for="refresh">Refresh:</label>
+        <select id="refresh" onchange="controller?.setRefresh(this.value === 'static' ? staticRefresh : animatedRefresh)">
+          <option value="static" selected>static</option>
+          <option value="animated">animated</option>
         </select>
       </div>
     </div>

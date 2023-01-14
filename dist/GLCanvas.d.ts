@@ -1,9 +1,9 @@
 import { CSSProperties } from "react";
 import { ProgramConfig, ProgramId } from "./gl/program/program";
-import { GlController } from "./control/gl-controller";
+import { GlController, OnRefresh } from "./control/gl-controller";
 export interface Props {
     pixelRatio?: number;
-    onRefresh?: (gl: WebGL2RenderingContext) => () => void | undefined;
+    onRefresh?: OnRefresh;
     style?: CSSProperties;
     webglAttributes?: WebGLContextAttributes;
     initialProgram?: ProgramId;

@@ -3,11 +3,11 @@ import { useGL } from "./gl/use-gl";
 import { useCanvasSize } from "./dimension/use-canvas-size";
 import { ProgramConfig, ProgramId } from "./gl/program/program";
 import { useProgram } from "./gl/program/use-program";
-import { GlController } from "./control/gl-controller";
+import { GlController, OnRefresh } from "./control/gl-controller";
 
 export interface Props {
     pixelRatio?: number;
-    onRefresh?: (gl: WebGL2RenderingContext) => ()=>void | undefined;
+    onRefresh?: OnRefresh;
     style?: CSSProperties;
     webglAttributes?: WebGLContextAttributes;
     initialProgram?: ProgramId;
@@ -22,14 +22,22 @@ export default function GLCanvas(props?: Props): JSX.Element {
     const gl = useGL({ canvasRef, webglAttributes });
     const { usedProgram } = useProgram({ gl, initialProgram, programs: props?.programs, showDebugInfo, controller });
     const { width, height } = useCanvasSize({ gl, canvasRef, pixelRatio })
+    const [refresh, setRefresh] = useState<OnRefresh | undefined>(() => onRefresh);
+
     useEffect(() => {
-        if (gl && usedProgram) {
-            const cleanup = onRefresh?.(gl);
+        if (gl && usedProgram && refresh) {
+            const cleanup = refresh(gl);
             return () => {
                 cleanup?.();
             };
         }
-    }, [gl, usedProgram, onRefresh, width, height]);
+    }, [gl, usedProgram, refresh, width, height]);
+
+    useEffect(() => {
+        if (controller) {
+            controller.setRefresh = (refreshMethod: OnRefresh) => setRefresh(() => refreshMethod);
+        }
+    }, [controller, setRefresh]);
 
     return <canvas ref={canvasRef}
             width={width}
