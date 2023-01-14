@@ -1,5 +1,4 @@
 import React, { CSSProperties, RefObject, useCallback, useEffect, useState } from "react";
-import configureGl, { GLConfig, Info } from "./gl/configure-gl";
 import { useGL } from "./gl/use-gl";
 import { useCanvasSize } from "./dimension/use-canvas-size";
 import { ProgramConfig, ProgramId } from "./gl/program/program";
@@ -10,8 +9,7 @@ export interface Props {
     pixelRatio?: number;
     onRefresh?: (gl: WebGL2RenderingContext) => ()=>void | undefined;
     style?: CSSProperties;
-    glConfig: GLConfig;
-    onInfoUpdate?: (info: Info) => void;
+    webglAttributes?: WebGLContextAttributes;
     activeProgram?: ProgramId;
     programs?: ProgramConfig[];
     showDebugInfo?: boolean;
@@ -19,13 +17,12 @@ export interface Props {
 }
 
 export default function GLCanvas(props?: Props): JSX.Element {
-    const { pixelRatio = 2, onRefresh, glConfig, showDebugInfo, controller } = props ?? {};
+    const { pixelRatio = 2, onRefresh, showDebugInfo, controller, webglAttributes } = props ?? {};
     const canvasRef: RefObject<HTMLCanvasElement> = React.useRef<HTMLCanvasElement>(null);
     const [activeProgram, setActiveProgram] = useState(props?.activeProgram);
-    const gl = useGL({ canvasRef, config: glConfig?.config });
+    const gl = useGL({ canvasRef, webglAttributes });
     const { usedProgram } = useProgram({ gl, activeProgram, programs: props?.programs, showDebugInfo });
-    const { width, height } = useCanvasSize({ canvasRef, pixelRatio })
-    const { info } = configureGl({ gl, glConfig, showDebugInfo, width, height });
+    const { width, height } = useCanvasSize({ gl, canvasRef, pixelRatio })
     useEffect(() => {
         if (gl && usedProgram) {
             const cleanup = onRefresh?.(gl);
@@ -40,10 +37,6 @@ export default function GLCanvas(props?: Props): JSX.Element {
             controller.setActiveProgram = setActiveProgram;
         }
     }, [controller, setActiveProgram]);
-
-    useEffect(() => {
-        props?.onInfoUpdate?.(info);
-    }, [info]);
 
     return <canvas ref={canvasRef}
             width={width}

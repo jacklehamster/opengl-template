@@ -8,9 +8,6 @@
 
       const config = {
         showDebugInfo: true,
-        glConfig: {
-          backgroundColor: { r:0, g:0.1, b:0, a:1 },
-        },
         activeProgram: "sample-multicolor",
         programs: [
           {
@@ -141,7 +138,7 @@
     <title>Demo</title>
 	</head>
 	<body>
-    <div style="display: flex; flex-direction: row; position: absolute; color: whitesmoke">
+    <div style="display: flex; flex-direction: row; position: absolute;">
       <div>
         <label for="active">Active</label>
         <input id="active" type="checkbox" onChange="controller?.setActive(this.checked)" checked>    

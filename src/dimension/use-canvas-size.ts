@@ -1,6 +1,7 @@
-import React, { RefObject, useState } from "react";
+import React, { RefObject, useEffect, useState } from "react";
 
 interface Props {
+    gl?: WebGL2RenderingContext;
     canvasRef: RefObject<HTMLCanvasElement>;
     pixelRatio: number;    
 }
@@ -10,7 +11,7 @@ interface State {
     height: number;
 }
 
-export function useCanvasSize({ canvasRef, pixelRatio }: Props): State {
+export function useCanvasSize({ gl, canvasRef, pixelRatio }: Props): State {
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
 
@@ -28,6 +29,13 @@ export function useCanvasSize({ canvasRef, pixelRatio }: Props): State {
             observer.observe(canvas, { attributes: true, attributeFilter: ["style"] });
         }
     }, []);
+
+    useEffect(() => {
+        if (gl) {
+            gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+        }
+    }, [gl, width, height]);
+
     return {
         width,
         height,
