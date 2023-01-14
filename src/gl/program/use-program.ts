@@ -1,15 +1,17 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { GlController } from "../../control/gl-controller";
 import { ProgramResult, useShader } from "../use-shader";
 import { ProgramConfig, ProgramId } from "./program";
 
 interface Props {
     gl?: WebGL2RenderingContext;
-    activeProgram?: ProgramId;
+    initialProgram?: ProgramId;
     programs?: ProgramConfig[];
     showDebugInfo?: boolean;
+    controller?: GlController;
 }
 
-export function useProgram({ gl, activeProgram, programs, showDebugInfo }: Props) {
+export function useProgram({ gl, initialProgram, programs, showDebugInfo, controller }: Props) {
     const { createProgram, removeProgram } = useShader({ gl, showDebugInfo });
     const [programResults, setProgramResults] = useState<Record<ProgramId, ProgramResult>>({});
     const [usedProgram, setUsedProgram] = useState<WebGLProgram | undefined>();
@@ -49,16 +51,30 @@ export function useProgram({ gl, activeProgram, programs, showDebugInfo }: Props
         });
     }, [...(programs ?? []), createProgram, removeProgram]);
 
-    const activeProgramResult = useMemo(() => programResults[activeProgram ?? ""], [programResults, activeProgram]);
+    const setActiveProgram = useCallback((programId?: ProgramId): boolean => {
+        if (gl && programId) {
+            const result = programResults[programId];
+            if (result?.program) {
+                gl.useProgram(result.program);
+                setUsedProgram(result.program);
+                return true;
+            }
+        }
+        return false;
+    }, [gl, programResults]);
 
     useEffect(() => {
-        if (activeProgramResult?.program && gl) {
-            gl.useProgram(activeProgramResult.program);
-            setUsedProgram(activeProgramResult.program);
-        } else {
-            setUsedProgram(undefined);
+        if (controller) {
+            controller.setActiveProgram = setActiveProgram;
         }
-    }, [gl, activeProgramResult]);
+    }, [controller, setActiveProgram]);
+
+    useEffect(() => {
+        if (gl && !usedProgram) {
+            setActiveProgram(initialProgram ?? programs?.[0].id);
+        }
+    }, [gl, initialProgram, setActiveProgram, usedProgram, programs]);
+
     return {
         usedProgram,
     }

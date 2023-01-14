@@ -10,29 +10,15 @@ hookupCanvas(div, {
     onRefresh(gl) {
         //  do some WEBGL drawing
     },
-    glConfig,
-    activeProgram,
+    webglAttributes,
+    initialProgram,
     programs,
 }, controller);
 ```
 
-With glConfig:
-```
-glConfig = {
-    cullFace?: "front" | "back";
-    depth?: boolean;
-    backgroundColor?: {
-        r: number;
-        g: number;
-        b: number;
-        a: number;
-    };
-    config?: WebGLContextAttributes;    //  Typical webgl config passed when call getContext
-};
-```
-
-activeProgram is an id that indicates which program to use
-programs is an array of shader programs with the following structure:
+- initialProgram is an id that indicates the first program to use. If ommitted, by default,
+it's just the first one.
+- programs is an array of shader programs with the following structure:
 ```
         programs: [
           {
@@ -49,7 +35,6 @@ controller is an empty object {}, which will get filled with some methods:
 
 setActive: just activate / deactivate the canvas. Note that it also deletes all the canvas's programs.
 setActiveProgram: Here pass the program id. This switches between the program.
-
 
 Once we're done with setting up the config, the code in "onRefresh" can be used to render some WebGL graphics. onRefresh is called by the React component when it detects that it needs to refresh (canvas size changed, program changed, ...), but typically it'll also be used externally in a loop to render any animated graphics.
 

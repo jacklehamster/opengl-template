@@ -1,14 +1,14 @@
 import { CSSProperties } from "react";
 import { ProgramConfig, ProgramId } from "./gl/program/program";
-import { CanvasController } from "./control/canvas-controller";
+import { GlController } from "./control/gl-controller";
 export interface Props {
     pixelRatio?: number;
     onRefresh?: (gl: WebGL2RenderingContext) => () => void | undefined;
     style?: CSSProperties;
     webglAttributes?: WebGLContextAttributes;
-    activeProgram?: ProgramId;
+    initialProgram?: ProgramId;
     programs?: ProgramConfig[];
     showDebugInfo?: boolean;
-    controller?: CanvasController;
+    controller?: GlController;
 }
 export default function GLCanvas(props?: Props): JSX.Element;
