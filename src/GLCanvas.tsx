@@ -8,7 +8,7 @@ import { CanvasController } from "./control/canvas-controller";
 
 export interface Props {
     pixelRatio?: number;
-    onRefresh?: (gl: WebGL2RenderingContext) => void;
+    onRefresh?: (gl: WebGL2RenderingContext) => ()=>void | undefined;
     style?: CSSProperties;
     glConfig: GLConfig;
     onInfoUpdate?: (info: Info) => void;
@@ -28,7 +28,10 @@ export default function GLCanvas(props?: Props): JSX.Element {
     const { info } = configureGl({ gl, glConfig, showDebugInfo, width, height });
     useEffect(() => {
         if (gl && usedProgram) {
-            onRefresh?.(gl);
+            const cleanup = onRefresh?.(gl);
+            return () => {
+                cleanup?.();
+            };
         }
     }, [gl, usedProgram, onRefresh, width, height]);
 

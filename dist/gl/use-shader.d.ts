@@ -1,6 +1,4 @@
-import { AttributeConfiguration } from "./attributes/attribute-config";
-import { ShaderConfig } from "./shader-config";
-import { Attribute, Uniform } from "./attributes/use-attributes";
+import { ProgramConfig } from "./program/program";
 interface Props {
     gl?: WebGL2RenderingContext;
     showDebugInfo?: boolean;
@@ -8,12 +6,10 @@ interface Props {
 export interface ProgramResult {
     id: number;
     program: WebGLProgram;
-    attributes: Attribute[];
-    uniforms: Uniform[];
     ready?: boolean;
 }
 export declare function useShader({ gl, showDebugInfo }: Props): {
-    createProgram: (shaderConfig: ShaderConfig, attributeConfigs: AttributeConfiguration[]) => ProgramResult | undefined;
+    createProgram: ({ vertex, fragment }: ProgramConfig) => ProgramResult | undefined;
     removeProgram: (programResult: ProgramResult) => void;
 };
 export {};

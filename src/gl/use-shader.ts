@@ -1,7 +1,5 @@
 import { useCallback } from "react";
-import { AttributeConfiguration } from "./attributes/attribute-config";
-import { ShaderConfig } from "./shader-config";
-import useAttributes, { Attribute, Uniform } from "./attributes/use-attributes";
+import { ProgramConfig } from "./program/program";
 
 let nextId = 1;
 
@@ -13,14 +11,10 @@ interface Props {
 export interface ProgramResult {
     id: number;
     program: WebGLProgram;
-    attributes: Attribute[];
-    uniforms: Uniform[];
     ready?: boolean;
 }
 
 export function useShader({ gl, showDebugInfo }: Props) {
-    const { assignAttributes, initAttributes, initUniforms, clearBuffers } = useAttributes({ gl, showDebugInfo });
-
     const typeName = useCallback((type: number) => {
         return type == gl?.VERTEX_SHADER ? "vertex" :
             type === gl?.FRAGMENT_SHADER ? "fragment" :
@@ -48,7 +42,7 @@ export function useShader({ gl, showDebugInfo }: Props) {
         return shader;      
     }, [gl]);
 
-    const createProgram = useCallback((shaderConfig: ShaderConfig, attributeConfigs: AttributeConfiguration[]): ProgramResult | undefined => {
+    const createProgram = useCallback(({ vertex, fragment}: ProgramConfig): ProgramResult | undefined => {
         if (!gl) {
             return;
         }
@@ -56,10 +50,9 @@ export function useShader({ gl, showDebugInfo }: Props) {
         if (!program) {
             throw new Error(`Unable to create program.`);
         }
-        assignAttributes(program, attributeConfigs, shaderConfig.vertex);
 
-        const vertexShader = createShader(shaderConfig.vertex, gl.VERTEX_SHADER)!;
-        const fragmentShader = createShader(shaderConfig.fragment, gl.FRAGMENT_SHADER)!;
+        const vertexShader = createShader(vertex, gl.VERTEX_SHADER)!;
+        const fragmentShader = createShader(fragment, gl.FRAGMENT_SHADER)!;
         gl.attachShader(program, vertexShader);
         gl.attachShader(program, fragmentShader);
         gl.linkProgram(program);
@@ -71,33 +64,26 @@ export function useShader({ gl, showDebugInfo }: Props) {
         if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
             throw new Error("Unable to initialize the shader program:\n" + gl.getProgramInfoLog(program));
         }
-        const uniforms = initUniforms(program, shaderConfig.vertex, shaderConfig.fragment);
-        const attributes = initAttributes(program, attributeConfigs, shaderConfig.vertex, shaderConfig.maxInstanceCount);
         const result = {
             id: nextId++,
-            uniforms: uniforms ?? [],
-            attributes: attributes?.filter((a): a is Attribute => !!a) ?? [],
             program,
         };
         if (showDebugInfo) {
             console.log(`Program ${result.id} created.`);
         }
         return result;
-    }, [gl, assignAttributes, initUniforms, showDebugInfo]);
+    }, [gl, showDebugInfo]);
 
     const removeProgram = useCallback((programResult: ProgramResult) => {
         if (!gl) {
             return;
         }
-        clearBuffers(programResult.attributes);
-        programResult.attributes.length = 0;
-        programResult.uniforms.length = 0;
         gl.deleteProgram(programResult.program);
         if (showDebugInfo) {
             console.log(`Program ${programResult.id} destroyed.`);
         }
         programResult.program = 0;
-    }, [gl, clearBuffers, showDebugInfo]);
+    }, [gl, showDebugInfo]);
 
     return {
         createProgram,

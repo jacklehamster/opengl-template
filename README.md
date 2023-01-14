@@ -37,30 +37,11 @@ programs is an array of shader programs with the following structure:
         programs: [
           {
               id: "sample-multicolor",
-              shaderConfig: {
-                vertex: VERTEX_SHADER_CODE,
-                fragment: FRAGMENT_SHADER_CODE,
-                maxInstancesCount: 10000,   //  optional
-              },
-              attributeConfigs: [
-                {
-                  name: "position",
-                  location: 0,
-                  type: "FLOAT",
-                  usage: "STATIC_DRAW",
-                },
-                {
-                  name: "color",
-                  type: "FLOAT",
-                  usage: "STATIC_DRAW",
-                }
-              ],
+              vertex: VERTEX_SHADER_CODE,
+              fragment: FRAGMENT_SHADER_CODE,
           },
         ],
 ```
-
-Attribute configs defines the type of each attributes in the shaders.
-
 
 controller is an empty object {}, which will get filled with some methods:
 - setActive

@@ -33,7 +33,7 @@ export function useProgram({ gl, activeProgram, programs, showDebugInfo }: Props
             programs?.forEach(program => {
                 existingProgramIds.add(program.id);
                 if (!results[program.id]) {
-                    const result = createProgram(program.shaderConfig, program.attributeConfigs);
+                    const result = createProgram(program);
                     if (result) {
                         newResults[program.id] = result;
                     }

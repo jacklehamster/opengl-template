@@ -15,122 +15,87 @@
         programs: [
           {
               id: "sample-multicolor",
-              shaderConfig: {
-                vertex: 
-                `#version 300 es
+              vertex: 
+              `#version 300 es
 
-                  precision highp float;
-                  in vec4 position;
-                  in vec3 color;
-                  
-                  out vec3 vColor;
+                precision highp float;
+                layout (location=0) in vec4 position;
+                layout (location=1) in vec3 color;
+                
+                out vec3 vColor;
 
-                  void main() {
-                      vColor = color;
-                      gl_Position = position;
-                  }
-                `,
-                fragment:
-                `#version 300 es
-
-                  precision highp float;
-                  in vec3 vColor;
-                  out vec4 fragColor;
-
-                  void main() {
-                      fragColor = vec4(vColor, 1.0);
-                  }
-                `
-              },
-              attributeConfigs: [
-                {
-                  name: "position",
-                  location: 0,
-                  type: "FLOAT",
-                  usage: "STATIC_DRAW",
-                },
-                {
-                  name: "color",
-                  type: "FLOAT",
-                  usage: "STATIC_DRAW",
+                void main() {
+                    vColor = color;
+                    gl_Position = position;
                 }
-              ],
-          },
+              `,
+              fragment:
+              `#version 300 es
+
+                precision highp float;
+                in vec3 vColor;
+                out vec4 fragColor;
+
+                void main() {
+                    fragColor = vec4(vColor, 1.0);
+                }
+              `
+            },
           {
               id: "sample-red",
-              shaderConfig: {
-                vertex: 
-                `#version 300 es
+              vertex: 
+              `#version 300 es
 
-                  precision highp float;
-                  in vec4 position;
+                precision highp float;
+                in vec4 position;
 
-                  void main() {
-                      gl_Position = position;
-                  }
-                `,
-                fragment:
-                `#version 300 es
-
-                  precision highp float;
-                  out vec4 fragColor;
-
-                  void main() {
-                      fragColor = vec4(0.5, 0.0, 0.0, 1.0);
-                  }
-                `
-              },
-              attributeConfigs: [
-                {
-                  name: "position",
-                  location: 0,
-                  type: "FLOAT",
-                  usage: "STATIC_DRAW",
+                void main() {
+                    gl_Position = position;
                 }
-              ],
+              `,
+              fragment:
+              `#version 300 es
+
+                precision highp float;
+                out vec4 fragColor;
+
+                void main() {
+                    fragColor = vec4(0.5, 0.0, 0.0, 1.0);
+                }
+              `
           },
           {
               id: "sample-blue",
-              shaderConfig: {
-                vertex: 
-                `#version 300 es
+              vertex: 
+              `#version 300 es
 
-                  precision highp float;
-                  in vec4 position;
+                precision highp float;
+                in vec4 position;
 
-                  void main() {
-                      gl_Position = position;
-                  }
-                `,
-                fragment:
-                `#version 300 es
-
-                  precision highp float;
-                  out vec4 fragColor;
-
-                  void main() {
-                      fragColor = vec4(0.0, 0.0, 0.5, 1.0);
-                  }
-                `
-              },
-              attributeConfigs: [
-                {
-                  name: "position",
-                  location: 0,
-                  type: "FLOAT",
-                  usage: "STATIC_DRAW",
+                void main() {
+                    gl_Position = position;
                 }
-              ],
-          }        
+              `,
+              fragment:
+              `#version 300 es
+
+                precision highp float;
+                out vec4 fragColor;
+
+                void main() {
+                    fragColor = vec4(0.0, 0.0, 0.5, 1.0);
+                }
+              `
+            },
         ],
         onRefresh(gl) {
           const triangleArray = gl.createVertexArray();
           gl.bindVertexArray(triangleArray);
 
-          var positions = new Float32Array([
+          const positions = new Float32Array([
               -0.5, -0.5, 0.0,
               0.5, -0.5, 0.0,
-              0.0, 0.5, 0.0
+              0.0, 0.5, 0.0,
           ]);
 
           const positionBuffer = gl.createBuffer();
@@ -156,6 +121,13 @@
           ////////////////
           gl.clear(gl.COLOR_BUFFER_BIT);
           gl.drawArrays(gl.TRIANGLES, 0, 3);
+          return () => {
+            gl.deleteBuffer(positionBuffer);
+            gl.deleteBuffer(colorBuffer);
+            gl.deleteVertexArray(triangleArray);
+            delete positions;
+            delete colors;
+          };
         }
       };
 
