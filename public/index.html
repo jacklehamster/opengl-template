@@ -186,12 +186,6 @@
     <title>Demo</title>
 	</head>
 	<body>
-    <div style="position: fixed; right: 15px; top: 15px">
-      <a id="source" href="https://neatnik.net/view-source/[nowrap,notidy]/" target="_blank">view source</a>
-      <script>
-       document.getElementById("source").href = "https://neatnik.net/view-source/[nowrap,notidy]/" + location.href;
-      </script>
-    </div>
     <div style="display: flex; flex-direction: row; position: absolute;">
       <div>
         <label for="active">Active:</label>
@@ -218,6 +212,12 @@
 
     <div id="root"></div>
 
+    <div style="position: fixed; right: 15px; top: 15px">
+      <a id="source" href="https://neatnik.net/view-source/[nowrap,notidy]/" target="_blank">view source</a>
+      <script>
+       document.getElementById("source").href = "https://neatnik.net/view-source/[nowrap,notidy]/" + location.href;
+      </script>
+    </div>
     <iframe src="https://jacklehamster.github.io/banner.html" frameborder="0" width="100%" height="100%"></iframe>
 	</body>
 </html>
