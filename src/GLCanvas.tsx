@@ -1,4 +1,4 @@
-import React, { CSSProperties, RefObject, useCallback, useEffect, useState } from "react";
+import React, { CSSProperties, RefObject, useEffect, useState } from "react";
 import { useGL } from "./gl/use-gl";
 import { useCanvasSize } from "./dimension/use-canvas-size";
 import { ProgramConfig, ProgramId } from "./gl/program/program";
@@ -17,7 +17,7 @@ export interface Props {
 }
 
 export default function GLCanvas(props?: Props): JSX.Element {
-    const { pixelRatio = 2, onRefresh, showDebugInfo, controller, initialProgram, webglAttributes } = props ?? {};
+    const { pixelRatio = devicePixelRatio, onRefresh, showDebugInfo, controller, initialProgram, webglAttributes } = props ?? {};
     const canvasRef: RefObject<HTMLCanvasElement> = React.useRef<HTMLCanvasElement>(null);
     const gl = useGL({ canvasRef, webglAttributes });
     const { usedProgram } = useProgram({ gl, initialProgram, programs: props?.programs, showDebugInfo, controller });
