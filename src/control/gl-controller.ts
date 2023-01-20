@@ -6,4 +6,5 @@ export interface GlController {
     setActiveProgram?: (id: ProgramId) => boolean;
     setRefresh(onRefresh: OnRefresh): void;
     getUniformLocation?: (name: string, id?: ProgramId) => WebGLUniformLocation | undefined;
+    getAttributeLocation?: (name: string, id?: ProgramId) => number;
 }

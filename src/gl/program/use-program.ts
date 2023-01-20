@@ -72,12 +72,23 @@ export function useProgram({ gl, initialProgram, programs, showDebugInfo, contro
         }
     }, [gl, programResults, usedProgram]);
 
+    const getAttributeLocation = useCallback((name: string, programId?: ProgramId): number => {
+        if (gl) {
+            const program = programId ? (programResults[programId])?.program : usedProgram;
+            if (program) {
+                return gl.getAttribLocation(program, name) ?? -1;
+            }
+        }
+        return -1;
+    }, [gl, programResults, usedProgram]);
+
     useEffect(() => {
         if (controller) {
             controller.setActiveProgram = setActiveProgram;
             controller.getUniformLocation = getUniformLocation;
+            controller.getAttributeLocation = getAttributeLocation;
         }
-    }, [controller, setActiveProgram, getUniformLocation]);
+    }, [controller, setActiveProgram, getUniformLocation, getAttributeLocation]);
 
     useEffect(() => {
         if (gl && !usedProgram) {
