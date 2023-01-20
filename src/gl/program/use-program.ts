@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { GlController } from "../../control/gl-controller";
 import { ProgramResult, useShader } from "../use-shader";
 import { ProgramConfig, ProgramId } from "./program";
@@ -63,11 +63,21 @@ export function useProgram({ gl, initialProgram, programs, showDebugInfo, contro
         return false;
     }, [gl, programResults]);
 
+    const getUniformLocation = useCallback((name: string, programId?: ProgramId): WebGLUniformLocation | undefined => {
+        if (gl) {
+            const program = programId ? (programResults[programId])?.program : usedProgram;
+            if (program) {
+                return gl.getUniformLocation(program, name) ?? undefined;
+            }
+        }
+    }, [gl, programResults, usedProgram]);
+
     useEffect(() => {
         if (controller) {
             controller.setActiveProgram = setActiveProgram;
+            controller.getUniformLocation = getUniformLocation;
         }
-    }, [controller, setActiveProgram]);
+    }, [controller, setActiveProgram, getUniformLocation]);
 
     useEffect(() => {
         if (gl && !usedProgram) {
