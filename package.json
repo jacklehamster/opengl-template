@@ -18,6 +18,9 @@
     "url": "https://github.com/jacklehamster/opengl-template/issues"
   },
   "homepage": "https://github.com/jacklehamster/opengl-template#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },  
   "devDependencies": {
     "@babel/preset-react": "^7.16.7",
     "@types/express": "^4.17.13",
