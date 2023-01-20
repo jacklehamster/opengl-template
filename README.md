@@ -30,11 +30,12 @@ it's just the first one.
 ```
 
 controller is an empty object {}, which will get filled with some methods:
-- setActive
-- setActiveProgram
+- **setActive**: just activate / deactivate the canvas. Note that it also deletes all the canvas's programs.
+- **setActiveProgram**: Here pass the program id. This switches between the program.
+- **setRefresh**: Pass a callback `refresh(gl)` where you can do all your WebGL drawing. Return the cleanup function in that callback.
+- **getUniformLocation**: Get the location of a uniform. Pass the name first, then the programId (uses the active program if omitted)
+- **getAttributeLocation**: Get the location of an attribute. Pass the name first, then the programId (uses the active program if omitted)
 
-setActive: just activate / deactivate the canvas. Note that it also deletes all the canvas's programs.
-setActiveProgram: Here pass the program id. This switches between the program.
 
 Once we're done with setting up the config, the code in "onRefresh" can be used to render some WebGL graphics. onRefresh is called by the React component when it detects that it needs to refresh (canvas size changed, program changed, ...), but typically it'll also be used externally in a loop to render any animated graphics.
 
