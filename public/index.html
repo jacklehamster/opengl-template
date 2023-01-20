@@ -38,15 +38,21 @@
             gl.enableVertexAttribArray(colorLocation);
           }
 
-        return {triangleArray, positions, positionBuffer, colors, colorBuffer};
+        return {triangleArray, positions, positionBuffer, colors, colorBuffer, positionLocation, colorLocation};
       }
 
-      function dispose(gl, {triangleArray, positions, positionBuffer, colors, colorBuffer}) {
+      function dispose(gl, {triangleArray, positions, positionBuffer, colors, colorBuffer, positionLocation, colorLocation}) {
         gl.deleteVertexArray(triangleArray);
         delete positions;
         delete colors;
         gl.deleteBuffer(positionBuffer);
         gl.deleteBuffer(colorBuffer);
+        if (positionLocation >= 0) {
+          gl.disableVertexAttribArray(positionLocation);
+        }
+        if (colorLocation >= 0) {
+          gl.disableVertexAttribArray(colorLocation);
+        }
       }
 
       function staticRefresh(gl) {
