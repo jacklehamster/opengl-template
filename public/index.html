@@ -201,7 +201,7 @@
       </div>
       <div>
         <label for="refresh">Refresh:</label>
-        <select id="refresh" onchange="controller?.setRefresh(this.value === 'static' ? staticRefresh : animatedRefresh)">
+        <select id="refresh" onchange="controller?.setRefresh(this.value === 'static' ? staticRefresh : animatedRefresh); updateDescription()">
           <option value="static" selected>static</option>
           <option value="animated">animated</option>
         </select>
@@ -211,6 +211,19 @@
 
 
     <div id="root"></div>
+
+
+    <div id="description" style="position: absolute; right: 20px; bottom: 20px; white-space: pre;"></div>
+    <script>
+      function updateDescription() {
+        const descDiv = document.getElementById("description");
+        const refreshValue = document.getElementById("refresh");
+        descDiv.textContent = refreshValue.value === "static" ?
+          `Sample triangle.`
+          : `Sample animated triangle.`;
+      }
+      updateDescription();
+    </script>
 
     <div style="position: fixed; right: 15px; top: 15px">
       <a id="source" href="https://neatnik.net/view-source/[nowrap,notidy]/" target="_blank">view source</a>
