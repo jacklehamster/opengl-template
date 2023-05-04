@@ -6,11 +6,11 @@
     <script>
       const controller = {};
 
-      function initialize(gl) {
+      function initialize(gl, getAttributeLocation) {
         const triangleArray = gl.createVertexArray();
           gl.bindVertexArray(triangleArray);
 
-          const positionLocation = controller.getAttributeLocation("position");
+          const positionLocation = getAttributeLocation("position");
           const positions = positionLocation >= 0 ? new Float32Array([
               0.0, 0.5, 0.0,
               -0.5, -0.5, 0.0,
@@ -24,7 +24,7 @@
             gl.enableVertexAttribArray(positionLocation);
           }
 
-          const colorLocation = controller.getAttributeLocation("color");
+          const colorLocation = getAttributeLocation("color");
           const colors = colorLocation >= 0 ? new Float32Array([
               1.0, 0.0, 0.0,
               0.0, 1.0, 0.0,
@@ -55,8 +55,8 @@
         }
       }
 
-      function staticRefresh(gl) {
-        const resources = initialize(gl);
+      function staticRefresh({gl, getAttributeLocation}) {
+        const resources = initialize(gl, getAttributeLocation);
         const {triangleArray, positions, positionBuffer, colors, colorBuffer} = resources;
         ////////////////
         // DRAW
@@ -67,8 +67,8 @@
         dispose(gl, resources);
       }
 
-      function animatedRefresh(gl) {
-        const resources = initialize(gl);
+      function animatedRefresh({gl, getAttributeLocation}) {
+        const resources = initialize(gl, getAttributeLocation);
         const {triangleArray, positions, positionBuffer, colors, colorBuffer} = resources;
 
         ////////////////
@@ -174,7 +174,7 @@
               `
             },
         ],
-        onRefresh: staticRefresh,
+        onChange: staticRefresh,
       };
 
       document.addEventListener("DOMContentLoaded", () => {
@@ -200,8 +200,8 @@
         </select>
       </div>
       <div>
-        <label for="refresh">Refresh:</label>
-        <select id="refresh" onchange="controller?.setRefresh(this.value === 'static' ? staticRefresh : animatedRefresh); updateDescription()">
+        <label for="onChange">OnChange:</label>
+        <select id="onChange" onchange="controller?.setOnChange(this.value === 'static' ? staticRefresh : animatedRefresh); updateDescription()">
           <option value="static" selected>static</option>
           <option value="animated">animated</option>
         </select>
@@ -217,7 +217,7 @@
     <script>
       function updateDescription() {
         const descDiv = document.getElementById("description");
-        const refreshValue = document.getElementById("refresh");
+        const refreshValue = document.getElementById("onChange");
         descDiv.textContent = refreshValue.value === "static" ?
           `Sample triangle.`
           : `Sample animated triangle.`;
