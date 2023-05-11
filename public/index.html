@@ -5,192 +5,16 @@
     <script src="gen/main.js"></script>
     <script>
       const controller = {};
-
-      function initialize(gl, getAttributeLocation) {
-        const triangleArray = gl.createVertexArray();
-          gl.bindVertexArray(triangleArray);
-
-          const positionLocation = getAttributeLocation("position");
-          const positions = positionLocation >= 0 ? new Float32Array([
-              0.0, 0.5, 0.0,
-              -0.5, -0.5, 0.0,
-              0.5, -0.5, 0.0,
-          ]) : undefined;
-          const positionBuffer = positionLocation >= 0 ? gl.createBuffer() : undefined;
-          if (positionLocation >= 0) {
-            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-            gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false, 0, 0);
-            gl.enableVertexAttribArray(positionLocation);
-          }
-
-          const colorLocation = getAttributeLocation("color");
-          const colors = colorLocation >= 0 ? new Float32Array([
-              1.0, 0.0, 0.0,
-              0.0, 1.0, 0.0,
-              0.0, 0.0, 1.0
-          ]) : undefined;
-          const colorBuffer = colorLocation >= 0 ? gl.createBuffer() : undefined;
-          if (colorLocation >= 0) {
-            gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);SubtleCrypto
-            gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
-            gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false, 0, 0);
-            gl.enableVertexAttribArray(colorLocation);
-          }
-
-        return {triangleArray, positions, positionBuffer, colors, colorBuffer, positionLocation, colorLocation};
-      }
-
-      function dispose(gl, {triangleArray, positions, positionBuffer, colors, colorBuffer, positionLocation, colorLocation}) {
-        gl.deleteVertexArray(triangleArray);
-        delete positions;
-        delete colors;
-        gl.deleteBuffer(positionBuffer);
-        gl.deleteBuffer(colorBuffer);
-        if (positionLocation >= 0) {
-          gl.disableVertexAttribArray(positionLocation);
-        }
-        if (colorLocation >= 0) {
-          gl.disableVertexAttribArray(colorLocation);
-        }
-      }
-
-      function staticRefresh({gl, getAttributeLocation}) {
-        const resources = initialize(gl, getAttributeLocation);
-        const {triangleArray, positions, positionBuffer, colors, colorBuffer} = resources;
-        ////////////////
-        // DRAW
-        ////////////////
-        gl.clear(gl.COLOR_BUFFER_BIT);
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
-
-        dispose(gl, resources);
-      }
-
-      function animatedRefresh({gl, getAttributeLocation}) {
-        const resources = initialize(gl, getAttributeLocation);
-        const {triangleArray, positions, positionBuffer, colors, colorBuffer} = resources;
-
-        ////////////////
-        // DRAW
-        ////////////////
-        let id;
-        const loop = (time) => {
-          //  update position
-          if (time) {
-            positions[0] = Math.sin(time / 100);
-            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-            gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-
-            gl.clear(gl.COLOR_BUFFER_BIT);
-            gl.drawArrays(gl.TRIANGLES, 0, 3);
-          }
-          id = requestAnimationFrame(loop);
-        };
-
-        loop(0);
-
-        return () => {
-          dispose(gl, resources);
-          cancelAnimationFrame(id);
-        };
-      }
-
-      const config = {
-        showDebugInfo: true,
-        programs: [
-          {
-              id: "sample-multicolor",
-              vertex: 
-              `#version 300 es
-
-                precision highp float;
-                layout (location=0) in vec4 position;
-                layout (location=1) in vec3 color;
-                
-                out vec3 vColor;
-
-                void main() {
-                    vColor = color;
-                    gl_Position = position;
-                }
-              `,
-              fragment:
-              `#version 300 es
-
-                precision highp float;
-                in vec3 vColor;
-                out vec4 fragColor;
-
-                void main() {
-                    fragColor = vec4(vColor, 1.0);
-                }
-              `
-            },
-          {
-              id: "sample-red",
-              vertex: 
-              `#version 300 es
-
-                precision highp float;
-                in vec4 position;
-
-                void main() {
-                    gl_Position = position;
-                }
-              `,
-              fragment:
-              `#version 300 es
-
-                precision highp float;
-                out vec4 fragColor;
-
-                void main() {
-                    fragColor = vec4(0.5, 0.0, 0.0, 1.0);
-                }
-              `
-          },
-          {
-              id: "sample-blue",
-              vertex: 
-              `#version 300 es
-
-                precision highp float;
-                in vec4 position;
-
-                void main() {
-                    gl_Position = position;
-                }
-              `,
-              fragment:
-              `#version 300 es
-
-                precision highp float;
-                out vec4 fragColor;
-
-                void main() {
-                    fragColor = vec4(0.0, 0.0, 0.5, 1.0);
-                }
-              `
-            },
-        ],
-        onChange: staticRefresh,
-      };
-
       document.addEventListener("DOMContentLoaded", () => {
         const div = document.getElementById("root");
         div.style.border = "2px solid red";
-        exports.hookupCanvas(div, config, controller);
+        exports.hookupApp(div, controller);
       });
     </script>
     <title>Demo</title>
 	</head>
 	<body>
     <div style="display: flex; flex-direction: row; position: absolute;">
-      <div>
-        <label for="active">Active:</label>
-        <input id="active" type="checkbox" onChange="controller?.setActive(this.checked)" checked>    
-      </div>
       <div>
         <label for="program">Program:</label>
         <select id="program" onchange="controller?.setActiveProgram(this.value)">
@@ -201,7 +25,7 @@
       </div>
       <div>
         <label for="onChange">OnChange:</label>
-        <select id="onChange" onchange="controller?.setOnChange(this.value === 'static' ? staticRefresh : animatedRefresh); updateDescription()">
+        <select id="onChange" onchange="controller?.setLoopActions(this.value === 'static' ? undefined : 'animate'); updateDescription()">
           <option value="static" selected>static</option>
           <option value="animated">animated</option>
         </select>

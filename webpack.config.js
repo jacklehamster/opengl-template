@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 
 export default {
   mode: "production",
-  entry: "/src/index.ts",
+  entry: "/src/index.tsx",
   output: { path: path.resolve(__dirname, "public/gen") },
   resolve: {
     extensions: [".js", ".jsx", ".json", ".ts", ".tsx", ".css", ".scss", ".png"],

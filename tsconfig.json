@@ -25,5 +25,5 @@
     "isolatedModules": true,
     "noEmit": false
   },
-  "include": ["src/**/*", "src/external/newgrounds/newgroundsio.min.js"]
+  "include": ["src/**/*"]
 }
